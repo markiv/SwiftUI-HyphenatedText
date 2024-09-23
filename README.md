@@ -1,9 +1,9 @@
 # SwiftUI-HyphenatedText
 
-SwiftUI `Text` views can wrap text strings into multiple lines, and they look fine in English. For some reason, however, they do not follow locale conventions. This behavior is especially problematic with languages such as German.
+SwiftUI `Text` views can wrap text strings into multiple lines – and these look fine in English. For some reason, however, the hyphenation does not follow locale conventions. This behavior is especially problematic with languages such as German.
 
 
-This library leverages long existing [Core Foundation APIs](https://developer.apple.com/documentation/corefoundation/1542693-cfstringgethyphenationlocationbe) to insert [soft hyphens](https://en.wikipedia.org/wiki/Soft_hyphen) into strings. Thus, we give the text rendering system *hints* on where to hyphenate the text and insert visible hyphens.
+This library leverages long existing [Core Foundation APIs](https://developer.apple.com/documentation/corefoundation/1542693-cfstringgethyphenationlocationbe) to insert [soft hyphens](https://en.wikipedia.org/wiki/Soft_hyphen) into strings. Thus, we give the text rendering system *hints* on where to hyphenate the text and insert visible hyphens where needed.
 
 There is built-in hyphenation support for German, French, Spanish, Italian and many other languages.
 
@@ -34,6 +34,7 @@ If you need your text to react to `locale` changes in the SwiftUI environment, u
 
 ```swift
 HyphenatedText(text)
+    .environment(\.locale, Locale(identifier: "de_CH"))
 ```
 
 This library supports iOS from version 15 onwards, macOS from 12, tvOS from 15, watchOS from 8, and visionOS from version 1.
