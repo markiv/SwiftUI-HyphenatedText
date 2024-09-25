@@ -10,21 +10,24 @@ import SwiftUI
 /// Presents a `Text` view that hyphenates its contents according to the current locale.
 /// It responds to changes in the SwiftUI environment's `locale`.
 public struct HyphenatedText: View {
-    let key: String
+    let content: String
+    let verbatim: Bool
     @Environment(\.locale) private var locale
-    @State private var localizedString: String
+    @State private var localizedContent: String
 
-    public init(_ key: String) {
-        self.key = key
-        self.localizedString = key
+    public init(_ content: String, verbatim: Bool = false) {
+        self.content = content
+        self.localizedContent = content
+        self.verbatim = verbatim
     }
 
     public var body: some View {
-        Text(verbatim: localizedString)
+        Text(verbatim: localizedContent)
             .onAppear {
-                localizedString = locale.localized(key: key).hyphenated(locale: locale)
+                let content = verbatim ? content : locale.localized(key: content)
+                localizedContent = content.hyphenated(locale: locale)
             }
-            .id(locale) // cause an update if locale changes
+            .id(locale) // cause an update if the locale changes
     }
 }
 
@@ -32,17 +35,19 @@ public struct HyphenatedText: View {
 public typealias HText = HyphenatedText
 
 public extension Text {
-    /// Initializes a `Text` view with a localized and hyphenated string.
-    /// - Note: The passed key will be localized during initialization according to the app's current locale, but will
+    /// Initializes a `Text` view with a hyphenated (and optionally localized) string.
+    /// - Note: The passed key will be localized during initialization according to the given locale, but will
     /// *not* change dynamically with the SwiftUI environment's `locale`.
     /// - Note: Hyphenation data is not available for all locales. You can use
     /// ``Foundation/Locale/isHyphenationAvailable`` to test for availability of hyphenation data.
     /// - Parameters:
-    ///   - key: The text (or localization key).
+    ///   - content: The verbatim text string or localization key.
+    ///   - verbatim: If true, the content is *not* localized. Default is false.
     ///   - locale: An optional locale that specifies which language's hyphenation conventions to use. Default is the
     /// current, auto-updating locale.
-    init(hyphenated key: String, locale: Locale = .autoupdatingCurrent) {
-        self.init(verbatim: String(localized: String.LocalizationValue(key)).hyphenated(locale: locale))
+    init(hyphenated content: String, verbatim: Bool = false, locale: Locale = .autoupdatingCurrent) {
+        let content = verbatim ? content : String(localized: String.LocalizationValue(content))
+        self.init(verbatim: content.hyphenated(locale: locale))
     }
 }
 
@@ -80,6 +85,7 @@ struct HyphenatedText_Previews: PreviewProvider {
                 #endif
             }
             .padding()
+            .task {}
         }
     }
 
